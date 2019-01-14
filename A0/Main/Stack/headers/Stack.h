@@ -13,9 +13,26 @@ private:
 	
 public:
 
-	/*****************************************/
-	/** WHATEVER CODE YOU NEED TO ADD HERE!! */
-	/*****************************************/
+	// Constructor
+	Node(Data val) {
+		holdMe = val;
+		next = NULL;
+	}
+	
+	// Return the value of current node
+	Data getVal() {
+		return holdMe;
+	}
+	
+	// Return the next node
+	Node* getNext() {
+		return next;
+	}
+	
+	// Set the next node
+	void setNext(Node* node) {
+		next = node;
+	}
 
 };
 
@@ -28,20 +45,52 @@ class Stack {
 public:
 
 	// destroys the stack
-	~Stack () { /* your code here */ }
+	~Stack () {
+		while(head != NULL){
+			head = head->getNext();
+		}
+		delete(head);
+	}
 
 	// creates an empty stack
-	Stack () { /* your code here */ }
+	Stack () {
+		head = NULL;
+	}
 
 	// adds pushMe to the top of the stack
-	void push (Data) { /* your code here */ }
+	void push (Data val) {
+		Node<Data> *newNode = new Node<Data>(val);
+		// If there is no head then set as head
+		if(head == NULL){
+			head = newNode;
+		}
+		// Else set newNode as new head
+		else{
+			newNode->setNext(head);
+			head = newNode;
+		}
+	}
 
 	// return true if there are not any items in the stack
-	bool isEmpty () { /* replace with your code */ return true; }
+	bool isEmpty () {
+		if(head == NULL){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
 
 	// pops the item on the top of the stack off, returning it...
 	// if the stack is empty, the behavior is undefined
-	Data pop () { /* replace with your code */ return Data ();  }
+	Data pop () {
+		// return the value of head and set new head as the next node
+		Node<Data> *topNode = head;
+		head = head->getNext();
+		Data val = topNode->getVal();
+		delete(topNode);
+		return val;
+	}
 };
 
 #endif

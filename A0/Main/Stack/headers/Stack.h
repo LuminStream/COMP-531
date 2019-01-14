@@ -1,4 +1,3 @@
-
 #ifndef STACK_H
 #define STACK_H
 
@@ -47,9 +46,9 @@ public:
 	// destroys the stack
 	~Stack () {
 		while(head != NULL){
+			delete(head);
 			head = head->getNext();
 		}
-		delete(head);
 	}
 
 	// creates an empty stack

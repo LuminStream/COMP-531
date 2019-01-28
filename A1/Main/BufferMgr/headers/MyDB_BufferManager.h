@@ -48,7 +48,7 @@ public:
 	~MyDB_BufferManager ();
 
 	// FEEL FREE TO ADD ADDITIONAL PUBLIC METHODS 
-
+	vector <char *> availableRam;
 private:
 
 	// YOUR STUFF HERE

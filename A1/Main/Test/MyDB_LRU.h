@@ -60,20 +60,29 @@ public:
 
     // Return the tail node
     Node* getTail();
+
+    // Find the target node
+    Node* findNode(pair<MyDB_TablePtr, size_t> identifier);
     
     // Add a newNode to the list
-    void addToList(pair<int, long> identifier, Page *page);
+    void addToList(pair<MyDB_TablePtr, size_t> identifier, Page *page);
 
-    // return current cache size
+    // Return current cache size
     int cacheSize();
+
+    // Kill a node from linked list
+    void killNode(Node *node);
+
+    // Return if is full
+    bool isFull ();
 
     // Constructor
     LRUCache(int capacity);
 
     // This is a hashMap
-    // Where key is pair<int, long> copntains the identifier of page
+    // Where key is pair<MyDB_TablePtr, size_t> copntains the identifier of page
     // Value is the Node
-    map<pair<int, long>, Node*> map;
+    map<pair<MyDB_TablePtr, size_t>, Node*> map;
 
 private:
     // The size of LRU cache

@@ -19,6 +19,12 @@ MyDB_PageHandle MyDB_BufferManager :: getPage () {
 }
 
 MyDB_PageHandle MyDB_BufferManager :: getPinnedPage (MyDB_TablePtr, long) {
+	// Check if allPages has this identifier
+	// If has, get the page from hashMap
+	// Then find this page from list
+	Page *targetPage = table -> findPage();
+	// If not, create new page and push it into allPages
+	
 	return nullptr;		
 }
 
@@ -36,7 +42,14 @@ MyDB_BufferManager :: MyDB_BufferManager (size_t pageSize, size_t numPages, stri
 	this -> tempFile = tempFile;
 
 	// Allocate memory
-	char* buffer = (char*) malloc(pageSize * numPages);
+	//char* buffer = (char*) malloc(pageSize * numPages);
+	for (size_t i = 0; i < numPages; i++) {
+		availableRam.push_back((char*) malloc (pageSizeIn));
+	}	
+
+	// Create a new LRU cache table
+	LRUCache *table = new LRUCache(numPages);
+
 }
 
 MyDB_BufferManager :: ~MyDB_BufferManager () {

@@ -30,7 +30,6 @@ void MyDB_Page :: addReference() {
 void MyDB_Page :: reduceReference() {
     this->reference_counter -= 1;
     if (this->reference_counter == 0) {
-        cout << "kill page is called" << endl;
         this->parentManager.killPage(this->parentTable, this->offset);
     }
 }
@@ -48,7 +47,6 @@ void *MyDB_Page :: getBytes() {
 /* let the page know we have written to the bytes */
 void MyDB_Page :: wroteBytes() {
     this->dirty = true;
-    cout << "Wrote bytes in page" << endl;
 }
 
 bool MyDB_Page :: isDirty() {

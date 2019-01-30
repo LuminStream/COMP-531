@@ -14,11 +14,9 @@ void *MyDB_PageHandleBase :: getBytes () {
 
 void MyDB_PageHandleBase :: wroteBytes () {
 	this->page->wroteBytes();
-	cout << "Trying to wrote bytes" << endl;
 }
 
 MyDB_PageHandleBase :: ~MyDB_PageHandleBase () {
-	cout << "destructor is called" << endl;
 	this->page->reduceReference();
 }
 
@@ -32,7 +30,6 @@ MyDB_PageHandleBase :: MyDB_PageHandleBase (MyDB_PagePtr page) {
 MyDB_PagePtr MyDB_PageHandleBase :: getMyPage() {
 	return this->page;
 }
-
 
 #endif
 

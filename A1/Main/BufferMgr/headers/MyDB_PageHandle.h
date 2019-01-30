@@ -44,7 +44,7 @@ public:
 private:
 
 	// YOUR CODE HERE
-
+	
 	/* page belonging to this handle */
 	MyDB_PagePtr page;
 };

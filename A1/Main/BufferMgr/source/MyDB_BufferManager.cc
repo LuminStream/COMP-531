@@ -82,8 +82,6 @@ MyDB_PageHandle MyDB_BufferManager :: getPinnedPage (MyDB_TablePtr whichTable, l
 
 		/* allocate ram to the return page */
 		this->LRU_cache->addToList(page_index, return_page);
-		// return_page->setBytes(this->availableRam[this->availableRam.size() - 1]);
-		// this->availableRam.pop_back();
 
 		/* read it? */
 		int file_descriptor;
@@ -97,7 +95,6 @@ MyDB_PageHandle MyDB_BufferManager :: getPinnedPage (MyDB_TablePtr whichTable, l
 		close (file_descriptor);
 
 	}
-
 	return make_shared <MyDB_PageHandleBase> (return_page);	
 }
 
@@ -105,7 +102,6 @@ MyDB_PageHandle MyDB_BufferManager :: getPinnedPage (MyDB_TablePtr whichTable, l
 MyDB_PageHandle MyDB_BufferManager :: getPinnedPage () {
 	/* check if there is available ram */
 	if (this->availableRam.size() == 0) {
-		cout << "get pinned page has no more availableRam" << endl;
 		this->moveOutLRUPage();
 	}
 
@@ -117,10 +113,7 @@ MyDB_PageHandle MyDB_BufferManager :: getPinnedPage () {
 	MyDB_PagePtr page = return_handle->getMyPage();
 	pair<MyDB_TablePtr, long> page_index = make_pair(page->getParentTable(), page->getOffset());
 	this->LRU_cache->addToList(page_index, page);
-	// cout << "we assign a address to page: "<< availableRam[this->availableRam.size() - 1] << endl;
-	// return_handle->getMyPage()->setBytes(this->availableRam[this->availableRam.size() - 1]);
-	// this->availableRam.pop_back();
-	cout << "==============================************************************========================" << endl;
+
 	return return_handle;
 }
 
@@ -135,20 +128,16 @@ void MyDB_BufferManager :: unpin (MyDB_PageHandle unpinMe) {
 void MyDB_BufferManager :: managePage (MyDB_TablePtr whichTable, long i) {
 	pair<MyDB_TablePtr, long> page_index = make_pair(whichTable, i);
 	if (this->LRU_cache->findNode(page_index) != nullptr) {
-		cout << "find it!" << endl; 
 		this->LRU_cache->moveToHead(this->LRU_cache->findNode(page_index));
-	} else {
-		cout << "there is no such page in LRU list" << endl;
-		//if (this->availableRam.size() == 0) {
-		  if (this->LRU_cache->cacheSize() == 16) {
-			cout << "now I will kick one page out of LRU list" << endl;
+	} 
+	else {
+		// We don't have extra space
+		if (this->LRU_cache->cacheSize() == 16) {
 			this->moveOutLRUPage();
-			cout << "ok after kick out page" << endl;
 		}
-		
-		//if (this->availableRam.size() == 0) {
-		  if (this->LRU_cache -> cacheSize() == 16) {
-			cout << "oh god! there is no available ram!" << endl;
+
+		// Now all nodes in the LRU list are pinned pages
+		if (this->LRU_cache -> cacheSize() == 16) {
 			exit(1);
 		}
 
@@ -169,15 +158,9 @@ void MyDB_BufferManager :: managePage (MyDB_TablePtr whichTable, long i) {
 }
 
 void MyDB_BufferManager :: moveOutLRUPage () {
-
 	this->LRU_cache->popTail();
-
-	cout << "ok after pop tail" << endl;
-
-	
 }
 
-// Remove page logic
 // If page is in allPages, erase key
 // If page is in LRU list, killNode
 void MyDB_BufferManager :: killPage (MyDB_TablePtr whichTable, long i) {
@@ -189,21 +172,17 @@ void MyDB_BufferManager :: killPage (MyDB_TablePtr whichTable, long i) {
 			// If we have this page in global map allPages
 			this->all_page_map.erase(page_index);
 		}
-
 		if (this->LRU_cache->findNode(page_index) != nullptr) {
 			// We have this key stored in LRU hash map 
 			this->LRU_cache->deleteNode(this->LRU_cache->findNode(page_index));
 		}
 	} else if (this->LRU_cache->findNode(page_index) != nullptr) {
 		if (this->LRU_cache->findNode(page_index)->getPage()->isPinned() == true) {
-			cout << "unpin the page" << endl;
 			this->LRU_cache->findNode(page_index)->getPage()->setPin(false);
 		}
 	} else {
 		this->all_page_map.erase(page_index);
 	}
-
-	
 }
 
 // Create a new bufferManager
@@ -220,7 +199,6 @@ MyDB_BufferManager :: MyDB_BufferManager (size_t pageSize, size_t numPages, stri
 
 	// Create a new LRU cache table
 	this->LRU_cache = new LRUCache(numPages, *this);
-
 }
 
 MyDB_BufferManager :: ~MyDB_BufferManager () {

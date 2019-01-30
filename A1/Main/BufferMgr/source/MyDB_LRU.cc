@@ -47,35 +47,22 @@ Node* LRUCache :: popTail () {
     Node *lastNode = tail -> prev;
     // cout << "what? wrong at the begining?" << endl;
     int counter = 0;
-    cout << "capacity is " << this->capacity << endl;
     while (counter < this->capacity) {
-        cout << "ispinned: " << lastNode->getPage()->isPinned() << endl;
         if (lastNode->getPage()->isPinned() == false) {
             break;
         }
-        cout << "ok after break" << endl;
         lastNode = lastNode -> prev;
-        cout << "ok after -> prev" << endl;
         counter ++;
     }
-    cout << "ok after finding unpinned page" << endl;
-    cout << "after ok" << this->cacheSize() << endl;
 
     if (lastNode == head) {
         // cout << "what? nullptr?" << endl;
         return nullptr;
     }
     else {
-        cout << "==================================popTail===================================" << endl;
-        cout << "============================================================================" << endl;
-        // cout << "there is unpinned page to move out" << endl;
         /* write the bytes back to disk if the bytes is dirty */
         MyDB_PagePtr page = lastNode->getPage();
 	    if (page->isDirty() == true) {
-            /////////////////////////////////////////////
-            cout << "page dirty is true" << endl;
-            cout << string ((char *)(page->returnBytes())) << endl;
-            //////////////////////////////////////////////
             int file_descriptor;
             if (page->getParentTable() == nullptr) {
                 file_descriptor = open (this->parentManager.tempFile.c_str (), O_CREAT | O_RDWR | O_SYNC, 0666);
@@ -89,8 +76,6 @@ Node* LRUCache :: popTail () {
         }
 
         this->deleteNode(lastNode);
-        cout << "after delete node cache size is: ";
-        cout << this->cacheSize() << endl;
 
         if (page->getReferenceCounter() == 0) {
             this->parentManager.killPage(page->getParentTable(), page->getOffset());
@@ -112,9 +97,7 @@ Node* LRUCache :: getTail () {
 
 // Add a new node to the list
 Node* LRUCache :: addToList (pair<MyDB_TablePtr, size_t> identifier, MyDB_PagePtr page) {
-    // Give page byte address<
-    // cout << "welcome to add to list" << endl;
-    // page -> setBytes(this->parentManager.availableRam[this->parentManager.availableRam.size () - 1]);
+    // Give page byte address
     page->bytes = this->parentManager.availableRam[this->parentManager.availableRam.size () - 1];
 
     this->parentManager.availableRam.pop_back();
@@ -131,7 +114,6 @@ Node* LRUCache :: addToList (pair<MyDB_TablePtr, size_t> identifier, MyDB_PagePt
 
 // Delete a node
 void LRUCache :: deleteNode (Node* node) {
-    cout << "============================In LRUCache :: deleteNode==========================" << endl;
     // Remove node from list
     removeNode(node);
     MyDB_PagePtr page = node -> getPage();
@@ -142,7 +124,6 @@ void LRUCache :: deleteNode (Node* node) {
     map.erase(page -> getPageIndex());
     page->bytes = nullptr;
     count--;
-    cout << "============================**************************==========================" << endl;
 }
 
 // Find a node by checking identifier
@@ -191,7 +172,6 @@ LRUCache :: LRUCache (int capacity, MyDB_BufferManager &parentManager) : parentM
 }
 
 LRUCache :: ~LRUCache(){
-    cout << "called ~LRUCache()" << endl;
     while(count >= 0){
         Node *node = tail -> prev;
         delete node;

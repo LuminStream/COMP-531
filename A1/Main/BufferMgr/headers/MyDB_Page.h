@@ -37,12 +37,27 @@ class MyDB_Page {
 
         bool isPinned();
 
-        void setByte();
+        void setBytes(void *ram);
         
+        void setPin(bool condition);
+
+        void setDirty(bool dirty);
+
+        size_t getOffset();
+
         pair<MyDB_TablePtr, size_t> getPageIndex();
 
+        MyDB_TablePtr getParentTable();
+
+        long getReferenceCounter();
+
+        void* returnBytes();
 
     private:
+        friend class MyDB_BufferManager;
+        friend class LRUCache;
+
+
         /* the buffer manager managing this page */
         MyDB_BufferManager &parentManager;
 
@@ -50,7 +65,7 @@ class MyDB_Page {
         MyDB_TablePtr parentTable;
 
         /* the offset of page in its table */
-        size_t offset;
+        long offset;
 
         /* the number of references to this page */
         long reference_counter;

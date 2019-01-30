@@ -4,6 +4,10 @@
 
 #include "MyDB_PageHandle.h"
 #include "MyDB_Table.h"
+#include "MyDB_LRU.h"
+#include <vector>
+#include <map>
+#include <list>
 
 using namespace std;
 
@@ -48,20 +52,41 @@ public:
 	~MyDB_BufferManager ();
 
 	// FEEL FREE TO ADD ADDITIONAL PUBLIC METHODS 
-	vector <char *> availableRam;
+
+	// When called getByte, manage current page into list and apply LRU
+	void managePage (MyDB_TablePtr whichTable, long i);
+
+	// move a page ut of LRU list
+	void moveOutLRUPage ();
+
+	// kill a page if there is no reference to him
+	void killPage (MyDB_TablePtr whichTable, long i);
+
+	/* available ram in void type to accept any type of data */
+	vector <void *> availableRam;
+	
 private:
 
 	// YOUR STUFF HERE
+	friend class LRUCache;
 	
+	/* all pages that are got recently */
+	map<pair<MyDB_TablePtr, long>, MyDB_PagePtr> all_page_map;
+
+	/* counter for anonymous pages */
+	long anonymous_page_counter;
+
+	/* LRU cache */
+	LRUCache *LRU_cache;
+
 	// the size of each page is pageSize
 	size_t pageSize;
+
 	// the number of pages managed by the buffer manager is numPages
 	size_t numPages;
+	
 	// temporary pages are written to the file tempFile
 	string tempFile;
-
-	// Need a hashmap to store all used pages allPages
-	// Need a queue to keep allocated memory
 };
 
 #endif

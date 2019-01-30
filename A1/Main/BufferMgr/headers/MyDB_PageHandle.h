@@ -38,6 +38,8 @@ public:
 
 	/* constructor, creating a new handle to a page */
 	MyDB_PageHandleBase (MyDB_PagePtr page);
+	
+	MyDB_PagePtr getMyPage();
 
 private:
 

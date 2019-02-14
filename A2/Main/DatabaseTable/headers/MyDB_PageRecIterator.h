@@ -4,9 +4,6 @@
 #include <memory>
 using namespace std;
 
-#define USED_BYTE(pageByte) (*((size_t *) (((char *) pageByte) + sizeof (size_t))))
-#define HEADER_SIZE (2 * sizeof (size_t));
-
 class MyDB_PageRecIterator;
 typedef shared_ptr <MyDB_PageRecIterator> MyDB_PageRecIterator;
 

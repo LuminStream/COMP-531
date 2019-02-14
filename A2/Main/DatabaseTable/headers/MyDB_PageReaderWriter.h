@@ -6,8 +6,8 @@
 #include "MyDB_TableReaderWriter.h"
 
 
-#define PAGE_TYPE(pageByte) (*((MyDB_PageType *) pageByte))
-#define USED_BYTE(pageByte) (*((size_t *) (((char *) pageByte) + sizeof (size_t))))
+//#define PAGE_TYPE(pageByte) (*((MyDB_PageType *) pageByte))
+//#define USED_BYTE(pageByte) (*((size_t *) (((char *) pageByte) + sizeof (size_t))))
 
 class MyDB_PageReaderWriter {
 

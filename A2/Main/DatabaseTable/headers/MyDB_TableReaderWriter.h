@@ -59,7 +59,10 @@ private:
 
 	map <int, MyDB_PageReaderWriter> pageMap;
 
-	shared_ptr <MyDB_PageReaderWriter> lastPage;
+	//shared_ptr <MyDB_PageReaderWriter> lastPage;
+
+	// This is for creating an empty record
+	MyDB_RecordPtr emptyRecord;
 };
 
 #endif

@@ -1,10 +1,10 @@
 #ifndef PAGE_REC_ITER_H
 #define PAGE_REC_ITER_H
 
-#include "../../Catalog/headers/MyDB_Table.h"
+#include "MyDB_RecordIterator.h"
 #include "../../Record/headers/MyDB_Record.h"
 #include "MyDB_TableReaderWriter.h"
-#include "MyDB_RecordIterator.h"
+#include "../../Catalog/headers/MyDB_Table.h"
 
 
 #include <memory>

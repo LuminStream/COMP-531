@@ -11,6 +11,9 @@
 
 using namespace std;
 
+class MyDB_BufferManager;
+typedef shared_ptr <MyDB_BufferManager> MyDB_BufferManagerPtr;
+
 class MyDB_BufferManager {
 
 public:

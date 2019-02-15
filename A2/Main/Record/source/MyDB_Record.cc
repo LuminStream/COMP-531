@@ -767,9 +767,12 @@ void *MyDB_Record :: toBinary (void *toHere) {
 
 	// if we have not written ourselves to the buffer, do so
 	if (bufferOld) {
+		cout << "do so ?" << endl;
 		writeAttsToBuffer ();
 	} 
 	memcpy (toHere, buffer, recSize);
+	// cout << "buffer is: " << buffer << endl;
+	// cout << "after mamcpy the toHere is: " << (string) ((char *) (toHere)) << endl;
 	return ((char *) toHere) + recSize;
 }
 

@@ -3,16 +3,17 @@
 #define TABLE_RW_H
 
 #include <memory>
-#include "MyDB_BufferManager.h"
-#include "MyDB_Record.h"
+#include "../../BufferMgr/headers/MyDB_BufferManager.h"
+#include "../../Record/headers/MyDB_Record.h"
+#include "../../Catalog/headers/MyDB_Table.h"
 #include "MyDB_RecordIterator.h"
-#include "MyDB_Table.h"
 
 // create a smart pointer for the catalog
 using namespace std;
 class MyDB_PageReaderWriter;
 class MyDB_TableReaderWriter;
 typedef shared_ptr <MyDB_TableReaderWriter> MyDB_TableReaderWriterPtr;
+typedef shared_ptr <MyDB_PageReaderWriter> MyDB_PageReaderWriterPtr;
 
 class MyDB_TableReaderWriter {
 
@@ -49,17 +50,13 @@ public:
 
 private:
 
-	// ANYTHING YOU NEED HERE
-
 	MyDB_TablePtr table;
 
 	MyDB_RecordIteratorPtr record;
 
 	MyDB_BufferManagerPtr bufferManager;
 
-	map <int, MyDB_PageReaderWriter> pageMap;
-
-	//shared_ptr <MyDB_PageReaderWriter> lastPage;
+	map <int, MyDB_PageReaderWriterPtr> pageMap;
 
 	// This is for creating an empty record
 	MyDB_RecordPtr emptyRecord;

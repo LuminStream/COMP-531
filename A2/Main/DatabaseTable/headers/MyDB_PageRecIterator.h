@@ -1,11 +1,16 @@
 #ifndef PAGE_REC_ITER_H
 #define PAGE_REC_ITER_H
 
+#include "../../BufferMgr/headers/MyDB_PageHandle.h"
+#include "../../Record/headers/MyDB_Record.h"
+#include "MyDB_RecordIterator.h"
+
 #include <memory>
+
 using namespace std;
 
 class MyDB_PageRecIterator;
-typedef shared_ptr <MyDB_PageRecIterator> MyDB_PageRecIterator;
+typedef shared_ptr <MyDB_PageRecIterator> MyDB_PageRecIteratorPtr;
 
 // IT IS PAGE_REC_ITERATOR
 
@@ -28,7 +33,7 @@ private:
 
     // Page handler and record 
     MyDB_PageHandle currentPage;
-    MyDB_RecordPtr record
+    MyDB_RecordPtr record;
     size_t offset;
 };
 

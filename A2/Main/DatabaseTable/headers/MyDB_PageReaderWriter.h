@@ -2,12 +2,9 @@
 #ifndef PAGE_RW_H
 #define PAGE_RW_H
 
-#include "MyDB_PageType.h"
+#include "../../Catalog/headers/MyDB_PageType.h"
 #include "MyDB_TableReaderWriter.h"
-
-
-//#define PAGE_TYPE(pageByte) (*((MyDB_PageType *) pageByte))
-//#define USED_BYTE(pageByte) (*((size_t *) (((char *) pageByte) + sizeof (size_t))))
+#include "MyDB_RecordIterator.h"
 
 class MyDB_PageReaderWriter {
 
@@ -43,12 +40,10 @@ public:
 	
 private:
 
-	// ANYTHING ELSE YOU WANT HERE
-	
 	// This is the page we need
 	MyDB_PageHandle currentPage;
 
-	// We need to get bufferManager here
+	// This is the size of the page
 	size_t pageSize;
 };
 

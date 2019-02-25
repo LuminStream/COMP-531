@@ -10,15 +10,30 @@
 
 using namespace std;
 
-void mergeIntoFile (MyDB_TableReaderWriter &sortMe, vector <MyDB_RecordIteratorAltPtr> &sortIntoMe, function <bool ()> comparatorIn, MyDB_RecordPtr lhsIn,  MyDB_RecordPtr rhsIn) {
+// comparator to help sort record iter
+class IteratorComparator {
 
-	
-}
+public:
 
-vector <MyDB_PageReaderWriter> mergeIntoList (MyDB_BufferManagerPtr, MyDB_RecordIteratorAltPtr, MyDB_RecordIteratorAltPtr, function <bool ()>, 
-	MyDB_RecordPtr, MyDB_RecordPtr) {return vector <MyDB_PageReaderWriter> (); } 
-	
-void sort (int runSize, MyDB_TableReaderWriter &sortMe, MyDB_TableReaderWriter &sortIntoMe, function <bool ()> comparatorIn, MyDB_RecordPtr lhsIn,  MyDB_RecordPtr rhsIn) {
+    IteratorComparator(function<bool()> comparatorIn, MyDB_RecordPtr lhsIn, MyDB_RecordPtr rhsIn) {
+        comparator = comparatorIn;
+        lhs = lhsIn;
+        rhs = rhsIn;
+    }
+
+    bool operator()(const MyDB_RecordIteratorAltPtr leftIter, const MyDB_RecordIteratorAltPtr rightIter) const {
+        leftIter->getCurrent(lhs);
+        rightIter->getCurrent(rhs);
+        return !comparator();
+    }
+
+private:
+    function<bool()> comparator;
+    MyDB_RecordPtr lhs;
+    MyDB_RecordPtr rhs;
+};
+
+void sort (int runSize, MyDB_TableReaderWriter &sortMe, MyDB_TableReaderWriter &sortIntoMe, function <bool ()> comparator, MyDB_RecordPtr lhs,  MyDB_RecordPtr rhs) {
 	// runSize is the number of pages
 	// sortMe whose contents are to be sorted
 	// sortIntoMe are to be written into. The result of the sort should be append to the end of this file
@@ -67,9 +82,97 @@ void sort (int runSize, MyDB_TableReaderWriter &sortMe, MyDB_TableReaderWriter &
 			pagesToSort.clear();
 		}
 	}
-	
-	//
+
 	mergeIntoFile(sortIntoMe, recordIter, comparator, lhs, rhs);
 } 
 
+void _append(MyDB_PageReaderWriter &myPageRW, vector <MyDB_PageReaderWriter> &appendIntoMe, MyDB_RecordPtr myRecord, MyDB_BufferManagerPtr parent) {
+	if (!myPageRW.append(myRecord)) {
+		appendIntoMe.push_back(myPageRW);
+		
+		// if current page reader/writer has no space, create a new reader/writer
+		MyDB_PageReaderWriter newPageRW(*parent);
+		newPageRW.append(myRecord);
+		myPageRW = newPageRW;
+	}
+}
+
+// helper function.  Gets two iterators, leftIter and rightIter.  It is assumed that these are iterators over
+// sorted lists of records.  This function then merges all of those records into a list of anonymous pages,
+// and returns the list of anonymous pages to the caller.  The resulting list of anonymous pages is sorted.
+// Comparisons are performed using comparator, lhs, rhs
+vector <MyDB_PageReaderWriter> mergeIntoList (MyDB_BufferManagerPtr parent, MyDB_RecordIteratorAltPtr leftIter, MyDB_RecordIteratorAltPtr rightIter, function <bool ()> comparator, MyDB_RecordPtr lhs, MyDB_RecordPtr rhs) {
+	MyDB_PageReaderWriter myPage(*parent);
+	vector <MyDB_PageReaderWriter> return_list;
+	string status = "";
+	while (true) {
+		leftIter->getCurrent(lhs);
+		rightIter->getCurrent(rhs);
+
+		// if left < right
+		if (comparator()) {
+			_append(myPage, return_list, lhs, parent); 
+
+			// if there is no next record in left, append all records in right
+			if (!leftIter->advance()) {
+                _append (myPage, return_list, rhs, parent);
+				
+                while (rightIter->advance ()) {
+                    rightIter->getCurrent (rhs);
+                    _append (myPage, return_list, rhs, parent);
+                }
+
+				break;
+			}
+		} else { // if left >= right
+			_append(myPage, return_list, rhs, parent);
+
+			// if there is no next record in right, append all records in left
+			if (!rightIter->advance()) {
+                _append (myPage, return_list, lhs, parent);
+				
+                while (leftIter->advance ()) {
+                    leftIter->getCurrent (lhs);
+                    _append (myPage, return_list, lhs, parent);
+                }
+
+				break;
+			}
+		}
+	}
+
+	return_list.push_back(myPage);
+	return return_list;
+}
+
+// accepts a list of iterators called mergeUs.  It is assumed that these are all iterators over sorted lists
+// of records.  This function then merges all of those records and appends them to the file sortIntoMe.  If
+// all of the iterators are over sorted lists of records, then all of the records appended onto the end of
+// sortIntoMe will be sorted.  Comparisons are performed using comparator, lhs, rhs
+void mergeIntoFile (MyDB_TableReaderWriter &sortIntoMe, vector <MyDB_RecordIteratorAltPtr> &mergeUs, function <bool ()> comparator, MyDB_RecordPtr lhs, MyDB_RecordPtr rhs) {
+	IteratorComparator comp (comparator, lhs, rhs);
+	priority_queue <MyDB_RecordIteratorAltPtr, vector <MyDB_RecordIteratorAltPtr>, IteratorComparator> pq(comp);
+
+	for (MyDB_RecordIteratorAltPtr iter : mergeUs) {
+		if (iter->advance()) {
+			pq.push(iter);
+		}
+	}
+
+	// put each record in pq to the sortIntoMe table
+	while (pq.size() > 0) {
+		MyDB_RecordIteratorAltPtr iter = pq.top();
+		iter->getCurrent(lhs);
+		sortIntoMe.append(lhs);
+
+		pq.pop();
+
+		// if iter still has next record, we put it into the pq again
+		// but its position in the pq might change.
+		if (iter->advance()) {
+			pq.push(iter);
+		}
+	}
+}
+	
 #endif

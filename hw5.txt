@@ -1,0 +1,38 @@
+Homework 5
+
+1. Applied Cryptography
+(a). 
+
+
+2. HTTPS
+(a). The attacker can impersonate the network if the network has unverified certificate. However, the HTTPS with self-signed certificate has protection about is content. A passive eavesdropper cannot do any modification to the content traffic. Thus, using HTTPS with a self-signed certificate could provide protection against passive eavesdroppers. 
+
+(b). A man-in-the-middle attacker could create their own self-certificate. The attacker could use a fake self-certificate to replace the real self-signed certificate during the connection and handshake progress. The the encrypted key could be decrypted by the attacker, and data information could be captured by the MITM attacker.
+
+(c). i. A slef-signed certificate for all pages could provide protection against passive eavesfropper, but will be compromised by the active attacks.
+	ii. This design is better than the design in (i). A certificate sign by a trusted CA for all pages could provide protection for both passive eavesdropper and active attacks. However, the session cookie is exposed to attackers. 
+	iii. 
+
+3. HSTS
+
+4. Web Attack
+(a). Since the attacker konws the username of an intended victim. Then the attack could use XSS attck to replace the username of the victim to the value in the '/deleteuser' form. Thus, the backend will do the 'delete_account(request.parameters['user'])' as the 'user' variable indicates the victim
+
+(b). Now the attacker can use CSRF to generate a link which has a iframe including codes to extract victim's session cookie from victim's browser. Then the validate_user_login_cookie function will have valid user parameter and login_cookie. Thus the victim's account will be deleted.
+
+(c). 
+
+5. Secure Programming
+
+(a). The basic form of stack-based buffer overflow attack discussed in lecture is that input data to exceed the limit of the buffer, then to overflow the return address. Thus, the return address could be replaced by a pointer to other address or a code to be excuted. Since there is a random canary value generated each time, when overflow happened, the changed value can't match with the expected value. Thus, a buffer overflow attack is catched. 
+
+(b). If the canary value is choosed at the compile time, the program at the run time could get the value of canary, and then change the return value to match with the canary. Thus, canary value cannot detect the buffer overflow. 0 is a good value for canary. Most of the buffer overflow attack is to choose strcpy() function. The 0 is a terminate value for strcpy(). Thus, if attack want to set a matching value of canary, then attacker has to put a null character in the function. Thus, the program will be terminated.
+
+(c). 1. We could use Structured Exception Handling to redirect address to the code we want to execute. Since it is cause of exception, the canary value will be bypassed.
+
+6. Email Spoofing
+
+7. Ethics
+(a). The idea of creating a defensive worm is to eliminated the malicious worm. However, the defensive worm is still hack in to other hosts, and will congest network and spreading across the network. Thus, to create a defensive worm is ethically unacceptable
+
+(b). The extrem condition is that the attacks is series and costs a lot of damage on internet and other people assets. And there is no other good idea to defend the worm and to protect people. The reduce the further damage, using a defensive worm is acceptable
